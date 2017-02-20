@@ -1,0 +1,21 @@
+#!/bin/sh
+
+NADDR_STR="192.168.5"
+MY_IP_END=67
+IDEV="eth0"
+
+OADDR_STR=`/sbin/ip addr show dev $IDEV | grep -m 1 "inet" | awk '{print $2}'`
+
+CHECK_INT=`/sbin/ip addr show dev $IDEV | grep -m 1 "\${NADDR_STR}.*"` 
+
+echo "CHECK_INT = $CHECK_INT"
+
+if [[ -z "${CHECK_INT}" ]];then
+
+        sudo /sbin/ip addr add "${NADDR_STR}.${MY_IP_END}/24" broadcast "${NADDR_STR}.255" dev "${IDEV}" label "${IDEV}:0"
+        echo "Main addres is ${OADDR_STR}"
+fi
+
+/usr/bin/cvlc --no-audio --pidfile /var/tmp/cvlc.pid http://${NADDR_STR}.12/mjpeg.cgi &
+
+exit 0
